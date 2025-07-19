@@ -1,6 +1,9 @@
 let activeTabId = null;
 const notified = {};
 
+const productiveCategories = ['chatting', 'applying_jobs', 'editing_profile', 'profile_browsing'];
+const unproductiveCategories = ['feed', 'reading'];
+
 chrome.tabs.onActivated.addListener(activeInfo => {
   activeTabId = activeInfo.tabId;
 });
@@ -25,6 +28,30 @@ function checkThreshold(category, timeSpent) {
   });
 }
 
+function updateScore(category, timeSpent) {
+  const minutes = timeSpent / 60;
+  let delta = 0;
+  if (productiveCategories.includes(category)) {
+    delta = minutes;
+  } else if (unproductiveCategories.includes(category)) {
+    delta = -minutes;
+  } else {
+    return;
+  }
+  chrome.storage.local.get('scoreboard', ({ scoreboard }) => {
+    scoreboard = scoreboard || { points: 0, badges: [] };
+    scoreboard.points = (scoreboard.points || 0) + delta;
+    scoreboard.badges = scoreboard.badges || [];
+    if (scoreboard.points >= 50 && !scoreboard.badges.includes('Productive Pro')) {
+      scoreboard.badges.push('Productive Pro');
+    }
+    if (scoreboard.points <= -30 && !scoreboard.badges.includes('Feed Fiend')) {
+      scoreboard.badges.push('Feed Fiend');
+    }
+    chrome.storage.local.set({ scoreboard });
+  });
+}
+
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'logActivity') {
@@ -43,6 +70,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         checkThreshold(category, log[category]);
       });
     });
+    updateScore(category, timeSpent);
     return;
   }
 

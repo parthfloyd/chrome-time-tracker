@@ -88,3 +88,12 @@ canvas#chart {
   width: 30px;
   height: 30px;
 }
+
+#scoreboard {
+  text-align: center;
+}
+
+#badges {
+  list-style: none;
+  padding: 0;
+}
