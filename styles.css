@@ -28,3 +28,20 @@ button {
   border: none;
   padding: 10px;
 }
+
+canvas#chart {
+  display: block;
+  margin: 10px auto;
+}
+
+.tooltip {
+  position: absolute;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 4px;
+  font-size: 12px;
+  pointer-events: none;
+  display: none;
+  z-index: 100;
+}
