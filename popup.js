@@ -3,6 +3,7 @@ const resetBtn = document.getElementById('resetBtn');
 const pomodoroBtn = document.getElementById('pomodoroBtn');
 const chartCanvas = document.getElementById('chart');
 const tooltip = document.getElementById('tooltip');
+const statsBtn = document.getElementById('statsBtn');
 let segments = [];
 
 function formatTime(seconds) {
@@ -99,4 +100,8 @@ chartCanvas.addEventListener('mousemove', (e) => {
 
 chartCanvas.addEventListener('mouseleave', () => {
   tooltip.style.display = 'none';
+});
+
+statsBtn.addEventListener('click', () => {
+  chrome.tabs.create({ url: 'visualization.html' });
 });
