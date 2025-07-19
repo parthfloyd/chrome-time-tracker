@@ -57,6 +57,66 @@ function renderSection(el, title, summary) {
   el.appendChild(avgEl);
 }
 
+function renderHeatmap(history, days = 7) {
+  const container = document.getElementById('heatmap');
+  if (!container) return;
+
+  const today = new Date();
+  const data = [];
+  const categoriesSet = new Set();
+
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(today.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    const cats = history[key] || {};
+    Object.keys(cats).forEach(c => categoriesSet.add(c));
+    data.push({ date: key, cats });
+  }
+
+  const categories = Array.from(categoriesSet);
+  if (!categories.length) {
+    container.textContent = 'No data available.';
+    return;
+  }
+
+  let maxVal = 0;
+  data.forEach(d => {
+    categories.forEach(cat => {
+      const v = d.cats[cat] || 0;
+      if (v > maxVal) maxVal = v;
+    });
+  });
+
+  const table = document.createElement('table');
+  table.className = 'heatmap-table';
+  const thead = document.createElement('thead');
+  const headRow = document.createElement('tr');
+  headRow.innerHTML = '<th>Date</th>' + categories.map(c => `<th>${c.replace('_',' ')}</th>`).join('');
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  data.forEach(d => {
+    const row = document.createElement('tr');
+    const dateCell = document.createElement('td');
+    dateCell.textContent = d.date.slice(5);
+    row.appendChild(dateCell);
+    categories.forEach(cat => {
+      const val = d.cats[cat] || 0;
+      const intensity = maxVal ? val / maxVal : 0;
+      const cell = document.createElement('td');
+      cell.style.backgroundColor = `rgba(0,115,177,${intensity})`;
+      if (val) cell.title = formatTime(val);
+      row.appendChild(cell);
+    });
+    tbody.appendChild(row);
+  });
+  table.appendChild(tbody);
+  container.innerHTML = '';
+  container.appendChild(table);
+}
+
 chrome.storage.local.get('activityHistory', ({ activityHistory }) => {
   const history = activityHistory || {};
   const daily = summarize(history, 1);
@@ -65,4 +125,5 @@ chrome.storage.local.get('activityHistory', ({ activityHistory }) => {
   renderSection(document.getElementById('daily'), 'Today', daily);
   renderSection(document.getElementById('weekly'), 'Last 7 Days', weekly);
   renderSection(document.getElementById('monthly'), 'Last 30 Days', monthly);
+  renderHeatmap(history, 7);
 });
