@@ -126,3 +126,4 @@ document.addEventListener('focusin', (e) => {
 
 updateCategory();
 startInterval();
+
