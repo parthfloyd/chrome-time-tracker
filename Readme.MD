@@ -19,6 +19,7 @@ A Chrome Extension to track time spent on:
 - Custom categories and idle/notification thresholds
 - Statistics page with daily, weekly and monthly summaries
 - Refreshed modern interface
+- Gamification points and badges for productive time
 
 ## Installation
 

@@ -69,3 +69,12 @@ canvas#chart {
   display: none;
   z-index: 100;
 }
+
+#scoreboard {
+  text-align: center;
+}
+
+#badges {
+  list-style: none;
+  padding: 0;
+}

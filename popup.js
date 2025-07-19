@@ -3,6 +3,8 @@ const resetBtn = document.getElementById('resetBtn');
 const chartCanvas = document.getElementById('chart');
 const tooltip = document.getElementById('tooltip');
 const statsBtn = document.getElementById('statsBtn');
+const pointsDiv = document.getElementById('points');
+const badgesList = document.getElementById('badges');
 let segments = [];
 
 function formatTime(seconds) {
@@ -44,6 +46,19 @@ function renderLog(log) {
   drawChart(log);
 }
 
+function refreshScoreboard() {
+  chrome.storage.local.get('scoreboard', ({ scoreboard }) => {
+    scoreboard = scoreboard || { points: 0, badges: [] };
+    pointsDiv.textContent = `Points: ${Math.floor(scoreboard.points)}`;
+    badgesList.innerHTML = '';
+    (scoreboard.badges || []).forEach(b => {
+      const li = document.createElement('li');
+      li.textContent = b;
+      badgesList.appendChild(li);
+    });
+  });
+}
+
 
 function refreshLog() {
   chrome.storage.local.get(['activityLog'], result => {
@@ -54,10 +69,13 @@ function refreshLog() {
 
 refreshLog();
 setInterval(refreshLog, 1000);
+refreshScoreboard();
+setInterval(refreshScoreboard, 1000);
 
 resetBtn.addEventListener('click', () => {
-  chrome.storage.local.set({ activityLog: {} }, () => {
+  chrome.storage.local.set({ activityLog: {}, scoreboard: { points: 0, badges: [] } }, () => {
     renderLog({});
+    refreshScoreboard();
   });
 });
 
