@@ -4,7 +4,8 @@ let currentCategory = null;
 let intervalId = null;
 let idleThreshold = 60;
 let isIdle = false;
-const isLinkedIn = window.location.href.startsWith('https://www.linkedin.com');
+// Only enable the tracker on the main LinkedIn site
+const isLinkedIn = window.location.hostname === 'www.linkedin.com';
 
 function formatOverlayTime(seconds) {
   const m = Math.floor(seconds / 60);
@@ -82,7 +83,7 @@ function trackActivity() {
 function startInterval() {
   if (!intervalId) {
     intervalId = setInterval(() => {
-      if (document.hasFocus()) {
+      if (document.visibilityState === 'visible' && document.hasFocus()) {
         trackActivity();
       }
     }, 5000);
@@ -160,7 +161,7 @@ document.head.appendChild(style);
 
 let overlaySeconds = 0;
 setInterval(() => {
-  if (document.hasFocus() && !isIdle && currentCategory) {
+  if (document.visibilityState === 'visible' && document.hasFocus() && !isIdle && currentCategory) {
     overlaySeconds++;
     overlay.textContent = `${currentCategory.replace('_',' ')}: ${formatOverlayTime(overlaySeconds)}`;
     overlay.style.display = 'block';
