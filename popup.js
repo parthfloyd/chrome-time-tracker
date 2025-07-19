@@ -44,10 +44,16 @@ function renderLog(log) {
   drawChart(log);
 }
 
-chrome.storage.local.get(['activityLog'], result => {
-  const log = result.activityLog || {};
-  renderLog(log);
-});
+
+function refreshLog() {
+  chrome.storage.local.get(['activityLog'], result => {
+    const log = result.activityLog || {};
+    renderLog(log);
+  });
+}
+
+refreshLog();
+setInterval(refreshLog, 1000);
 
 resetBtn.addEventListener('click', () => {
   chrome.storage.local.set({ activityLog: {} }, () => {

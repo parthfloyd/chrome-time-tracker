@@ -1,13 +1,28 @@
-body {
-  font-family: sans-serif;
-  width: 250px;
-  padding: 10px;
-  background-color: #121212;
-  color: white;
+:root {
+  --bg-color: #121212;
+  --text-color: #ffffff;
+  --accent-color: #4bc0c0;
 }
+
+body {
+  font-family: system-ui, sans-serif;
+  width: 260px;
+  padding: 16px;
+  background: linear-gradient(135deg, #1e1e1e, var(--bg-color));
+  color: var(--text-color);
+  display: grid;
+  gap: 10px;
+}
+
+.container {
+  display: grid;
+  gap: 10px;
+}
+
 
 h2 {
   text-align: center;
+  margin: 0;
 }
 
 ul {
@@ -16,17 +31,26 @@ ul {
 }
 
 li {
-  padding: 5px;
+  padding: 6px 4px;
   font-size: 14px;
+  display: flex;
+  justify-content: space-between;
 }
 
 button {
   margin-top: 10px;
   width: 100%;
-  background-color: #333;
-  color: white;
+  background-color: var(--accent-color);
+  color: #000;
   border: none;
   padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #379b9b;
 }
 
 canvas#chart {

@@ -1,6 +1,7 @@
 let lastTime = Date.now();
 let lastActivity = Date.now();
 let currentCategory = null;
+let intervalId = null;
 let idleThreshold = 60;
 let isIdle = false;
 
@@ -58,7 +59,7 @@ function updateCategory() {
 function trackActivity() {
   const now = Date.now();
   const timeSpent = Math.floor((now - lastTime) / 1000);
-  if (currentCategory && timeSpent > 1) {
+  if (currentCategory && timeSpent > 0) {
     chrome.runtime.sendMessage({
       type: 'logActivity',
       payload: { category: currentCategory, timeSpent }
@@ -68,13 +69,32 @@ function trackActivity() {
   lastActivity = now;
 }
 
+function startInterval() {
+  if (!intervalId) {
+    intervalId = setInterval(() => {
+      if (document.hasFocus()) {
+        trackActivity();
+      }
+    }, 5000);
+  }
+}
+
+function stopInterval() {
+  if (intervalId) {
+    clearInterval(intervalId);
+    intervalId = null;
+  }
+}
+
 window.addEventListener('focus', () => {
   updateCategory();
   lastTime = Date.now();
+  startInterval();
 });
 
 window.addEventListener('blur', () => {
   trackActivity();
+  stopInterval();
 });
 
 ['mousemove', 'keydown', 'scroll'].forEach(evt => {
@@ -105,3 +125,4 @@ document.addEventListener('focusin', (e) => {
 });
 
 updateCategory();
+startInterval();
