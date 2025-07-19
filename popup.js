@@ -1,5 +1,6 @@
 const logList = document.getElementById('logList');
 const resetBtn = document.getElementById('resetBtn');
+const pomodoroBtn = document.getElementById('pomodoroBtn');
 const chartCanvas = document.getElementById('chart');
 const tooltip = document.getElementById('tooltip');
 let segments = [];
@@ -53,6 +54,18 @@ resetBtn.addEventListener('click', () => {
     renderLog({});
   });
 });
+
+function updatePomodoroButton() {
+  chrome.runtime.sendMessage({ type: 'getPomodoroStatus' }, status => {
+    pomodoroBtn.textContent = status && status.active ? 'Stop Pomodoro' : 'Start Pomodoro';
+  });
+}
+
+pomodoroBtn.addEventListener('click', () => {
+  chrome.runtime.sendMessage({ type: 'togglePomodoro' }, updatePomodoroButton);
+});
+
+updatePomodoroButton();
 
 chartCanvas.addEventListener('mousemove', (e) => {
   const rect = chartCanvas.getBoundingClientRect();

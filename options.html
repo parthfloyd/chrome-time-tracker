@@ -20,10 +20,17 @@
   </style>
 </head>
 <body>
-  <h2>Customize Keywords</h2>
+  <h2>Tracking Options</h2>
   <form id="keywordForm">
-    <label for="keywords">Enter custom keywords (JSON format):</label>
+    <label for="keywords">Custom keywords & categories (JSON format):</label>
     <textarea id="keywords" name="keywords">{}</textarea>
+
+    <label for="idleThreshold">Idle threshold (seconds):</label>
+    <input type="number" id="idleThreshold" min="10" value="60" />
+
+    <label for="categoryThresholds">Notification thresholds per category (JSON in seconds):</label>
+    <textarea id="categoryThresholds" name="categoryThresholds">{}</textarea>
+
     <button type="submit">Save</button>
   </form>
   <script src="options.js"></script>
