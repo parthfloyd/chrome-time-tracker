@@ -51,19 +51,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         checkThreshold(category, log[category]);
       });
     });
-  } else if (request.type === 'togglePomodoro') {
+    return;
+  }
+
+  if (request.type === 'togglePomodoro') {
     pomodoroActive = !pomodoroActive;
     chrome.storage.local.set({ pomodoroActive }, () => {
       chrome.alarms.clearAll(() => {
         if (pomodoroActive) startWorkTimer();
         sendResponse({ active: pomodoroActive });
-        });
       });
+    });
     return true;
-  } else if (request.type === 'getPomodoroStatus') {
-    sendResponse({ active: pomodoroActive });
   }
-  return true;
+
+  if (request.type === 'getPomodoroStatus') {
+    sendResponse({ active: pomodoroActive });
+    return;
+  }
 });
 
 chrome.alarms.onAlarm.addListener(alarm => {
