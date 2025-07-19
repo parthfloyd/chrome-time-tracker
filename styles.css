@@ -70,6 +70,25 @@ canvas#chart {
   z-index: 100;
 }
 
+.heatmap-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.heatmap-table th,
+.heatmap-table td {
+  border: 1px solid #ddd;
+  text-align: center;
+  padding: 4px;
+}
+
+.heatmap-table td {
+  width: 30px;
+  height: 30px;
+}
+
 #scoreboard {
   text-align: center;
 }
