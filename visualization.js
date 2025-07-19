@@ -11,27 +11,29 @@ function summarize(history, days) {
   const sum = {};
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - days + 1);
+  let count = 0;
   for (const [date, cats] of Object.entries(history)) {
     const d = new Date(date);
     if (d < cutoff) continue;
+    count++;
     for (const [cat, val] of Object.entries(cats)) {
       sum[cat] = (sum[cat] || 0) + val;
     }
   }
-  return sum;
+  return { sum, count };
 }
 
-function renderSection(el, title, summary, days) {
+function renderSection(el, title, summary) {
   el.innerHTML = `<h3>${title}</h3>`;
   let total = 0;
-  for (const val of Object.values(summary)) total += val;
-  const avg = total / days;
+  for (const val of Object.values(summary.sum)) total += val;
+  const avg = summary.count ? total / summary.count : 0;
 
   const chart = document.createElement('div');
   chart.style.display = 'grid';
   chart.style.gap = '6px';
 
-  for (const [cat, val] of Object.entries(summary)) {
+  for (const [cat, val] of Object.entries(summary.sum)) {
     const row = document.createElement('div');
     row.style.display = 'flex';
     row.style.alignItems = 'center';
@@ -60,7 +62,7 @@ chrome.storage.local.get('activityHistory', ({ activityHistory }) => {
   const daily = summarize(history, 1);
   const weekly = summarize(history, 7);
   const monthly = summarize(history, 30);
-  renderSection(document.getElementById('daily'), 'Today', daily, 1);
-  renderSection(document.getElementById('weekly'), 'Last 7 Days', weekly, 7);
-  renderSection(document.getElementById('monthly'), 'Last 30 Days', monthly, 30);
+  renderSection(document.getElementById('daily'), 'Today', daily);
+  renderSection(document.getElementById('weekly'), 'Last 7 Days', weekly);
+  renderSection(document.getElementById('monthly'), 'Last 30 Days', monthly);
 });

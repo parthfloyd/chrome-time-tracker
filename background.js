@@ -1,5 +1,4 @@
 let activeTabId = null;
-let pomodoroActive = false;
 const notified = {};
 
 chrome.tabs.onActivated.addListener(activeInfo => {
@@ -26,13 +25,6 @@ function checkThreshold(category, timeSpent) {
   });
 }
 
-function startWorkTimer() {
-  chrome.alarms.create('workPeriod', { delayInMinutes: 25 });
-}
-
-function startBreakTimer() {
-  chrome.alarms.create('breakPeriod', { delayInMinutes: 5 });
-}
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'logActivity') {
@@ -54,45 +46,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return;
   }
 
-  if (request.type === 'togglePomodoro') {
-    pomodoroActive = !pomodoroActive;
-    chrome.storage.local.set({ pomodoroActive }, () => {
-      chrome.alarms.clearAll(() => {
-        if (pomodoroActive) startWorkTimer();
-        sendResponse({ active: pomodoroActive });
-      });
-    });
-    return true;
-  }
-
-  if (request.type === 'getPomodoroStatus') {
-    sendResponse({ active: pomodoroActive });
-    return;
-  }
-});
-
-chrome.alarms.onAlarm.addListener(alarm => {
-  if (!pomodoroActive) return;
-  if (alarm.name === 'workPeriod') {
-    chrome.notifications.create({
-      type: 'basic',
-      iconUrl: 'icon.png',
-      title: 'Break Time',
-      message: 'You have been working for 25 minutes. Time for a break!'
-    });
-    startBreakTimer();
-  } else if (alarm.name === 'breakPeriod') {
-    chrome.notifications.create({
-      type: 'basic',
-      iconUrl: 'icon.png',
-      title: 'Break Over',
-      message: 'Break finished. Back to work!'
-    });
-    startWorkTimer();
-  }
-});
-
-chrome.storage.local.get('pomodoroActive', data => {
-  pomodoroActive = data.pomodoroActive || false;
-  if (pomodoroActive) startWorkTimer();
 });

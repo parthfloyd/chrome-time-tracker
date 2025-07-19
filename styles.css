@@ -1,14 +1,14 @@
 :root {
-  --bg-color: #121212;
-  --text-color: #ffffff;
-  --accent-color: #4bc0c0;
+  --bg-color: #f0f2f5;
+  --text-color: #333;
+  --accent-color: #0073b1;
 }
 
 body {
   font-family: system-ui, sans-serif;
-  width: 260px;
+  width: 280px;
   padding: 16px;
-  background: linear-gradient(135deg, #1e1e1e, var(--bg-color));
+  background: var(--bg-color);
   color: var(--text-color);
   display: grid;
   gap: 10px;
@@ -41,7 +41,7 @@ button {
   margin-top: 10px;
   width: 100%;
   background-color: var(--accent-color);
-  color: #000;
+  color: #fff;
   border: none;
   padding: 10px;
   border-radius: 4px;
@@ -50,7 +50,7 @@ button {
 }
 
 button:hover {
-  background-color: #379b9b;
+  background-color: #005582;
 }
 
 canvas#chart {

@@ -4,6 +4,7 @@ let currentCategory = null;
 let intervalId = null;
 let idleThreshold = 60;
 let isIdle = false;
+const isLinkedIn = window.location.href.startsWith('https://www.linkedin.com');
 
 function formatOverlayTime(seconds) {
   const m = Math.floor(seconds / 60);
@@ -92,56 +93,57 @@ function stopInterval() {
   }
 }
 
-window.addEventListener('focus', () => {
-  updateCategory();
-  lastTime = Date.now();
-  startInterval();
-});
+if (isLinkedIn) {
+  window.addEventListener('focus', () => {
+    updateCategory();
+    lastTime = Date.now();
+    startInterval();
+  });
 
-window.addEventListener('blur', () => {
-  trackActivity();
-  stopInterval();
-});
+  window.addEventListener('blur', () => {
+    trackActivity();
+    stopInterval();
+  });
 
-['mousemove', 'keydown', 'scroll'].forEach(evt => {
-  window.addEventListener(evt, () => {
-    lastActivity = Date.now();
-    if (isIdle) {
-      isIdle = false;
-      lastTime = lastActivity;
+  ['mousemove', 'keydown', 'scroll'].forEach(evt => {
+    window.addEventListener(evt, () => {
+      lastActivity = Date.now();
+      if (isIdle) {
+        isIdle = false;
+        lastTime = lastActivity;
+        updateCategory();
+      }
+    }, true);
+  });
+
+  setInterval(() => {
+    if (!isIdle && Date.now() - lastActivity > idleThreshold * 1000) {
+      trackActivity();
+      isIdle = true;
+      currentCategory = null;
+    }
+  }, 5000);
+
+  document.addEventListener('focusin', (e) => {
+    if (isMessagingElement(e.target)) {
+      setCategory('chatting');
+    } else if (currentCategory === 'chatting') {
       updateCategory();
     }
-  }, true);
-});
+  });
 
-setInterval(() => {
-  if (!isIdle && Date.now() - lastActivity > idleThreshold * 1000) {
-    trackActivity();
-    isIdle = true;
-    currentCategory = null;
-  }
-}, 5000);
+  updateCategory();
+  startInterval();
 
-document.addEventListener('focusin', (e) => {
-  if (isMessagingElement(e.target)) {
-    setCategory('chatting');
-  } else if (currentCategory === 'chatting') {
-    updateCategory();
-  }
-});
-
-updateCategory();
-startInterval();
-
-const overlay = document.createElement('div');
+  const overlay = document.createElement('div');
 overlay.id = 'timeTrackerOverlay';
 overlay.style.position = 'fixed';
 overlay.style.bottom = '10px';
 overlay.style.right = '10px';
-overlay.style.padding = '4px 8px';
-overlay.style.background = 'rgba(0,0,0,0.7)';
+overlay.style.padding = '6px 10px';
+overlay.style.background = 'rgba(0,115,177,0.9)';
 overlay.style.color = '#fff';
-overlay.style.fontSize = '12px';
+overlay.style.fontSize = '14px';
 overlay.style.borderRadius = '4px';
 overlay.style.zIndex = '9999';
 overlay.style.pointerEvents = 'none';
@@ -164,4 +166,6 @@ setInterval(() => {
     overlay.style.display = 'none';
   }
 }, 1000);
+
+}
 

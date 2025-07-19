@@ -8,8 +8,7 @@
     "storage",
     "activeTab",
     "scripting",
-    "notifications",
-    "alarms"
+    "notifications"
   ],
   "options_page": "options.html",
   "background": {
@@ -24,7 +23,7 @@
   "content_scripts": [
     {
       "matches": [
-        "<all_urls>"
+        "https://www.linkedin.com/*"
       ],
       "js": [
         "content.js"
