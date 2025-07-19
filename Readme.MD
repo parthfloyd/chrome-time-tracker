@@ -11,6 +11,7 @@ A Chrome Extension to track time spent on:
 
 - Tracks time only on the **active tab**
 - Categorizes activity based on page URL
+- Detects chat windows in the feed to record messaging time
 - Displays a summary in the popup
 - Allows reset of all data
 
@@ -38,7 +39,7 @@ Edit
 
 ## How it Works
 
-- `content.js` runs on each page and determines the activity category.
+- `content.js` runs on each page and determines the activity category, including detecting chat windows within the feed.
 - `background.js` stores the activity time per category.
 - `popup.html` shows the tracked time and allows resetting.
 
