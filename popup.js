@@ -1,5 +1,6 @@
 const logList = document.getElementById('logList');
 const resetBtn = document.getElementById('resetBtn');
+const pomodoroBtn = document.getElementById('pomodoroBtn');
 
 function formatTime(seconds) {
   const mins = Math.floor(seconds / 60);
@@ -25,3 +26,15 @@ resetBtn.addEventListener('click', () => {
     renderLog({});
   });
 });
+
+function updatePomodoroButton() {
+  chrome.runtime.sendMessage({ type: 'getPomodoroStatus' }, status => {
+    pomodoroBtn.textContent = status && status.active ? 'Stop Pomodoro' : 'Start Pomodoro';
+  });
+}
+
+pomodoroBtn.addEventListener('click', () => {
+  chrome.runtime.sendMessage({ type: 'togglePomodoro' }, updatePomodoroButton);
+});
+
+updatePomodoroButton();

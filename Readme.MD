@@ -14,6 +14,8 @@ A Chrome Extension to track time spent on:
 - Detects chat windows in the feed to record messaging time
 - Displays a summary in the popup
 - Allows reset of all data
+- Custom categories and idle/notification thresholds
+- Optional desktop reminders with a Pomodoro timer
 
 ## Installation
 
@@ -48,3 +50,4 @@ Edit
 - `tabs`: to get the current active tab.
 - `storage`: to store time logs.
 - `activeTab`: for active tab focus handling.
+- `notifications`: to display alerts and timers.
