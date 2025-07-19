@@ -5,8 +5,14 @@ let intervalId = null;
 let idleThreshold = 60;
 let isIdle = false;
 
+function formatOverlayTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}m ${s < 10 ? '0' : ''}${s}s`;
+}
+
 const DEFAULT_KEYWORDS = {
-  reading: ['feed', 'article', 'news'],
+  reading: ['article', 'news'],
   feed: ['feed'],
   chatting: ['messaging', 'chat'],
   profile_browsing: ['profile', 'about'],
@@ -126,4 +132,36 @@ document.addEventListener('focusin', (e) => {
 
 updateCategory();
 startInterval();
+
+const overlay = document.createElement('div');
+overlay.id = 'timeTrackerOverlay';
+overlay.style.position = 'fixed';
+overlay.style.bottom = '10px';
+overlay.style.right = '10px';
+overlay.style.padding = '4px 8px';
+overlay.style.background = 'rgba(0,0,0,0.7)';
+overlay.style.color = '#fff';
+overlay.style.fontSize = '12px';
+overlay.style.borderRadius = '4px';
+overlay.style.zIndex = '9999';
+overlay.style.pointerEvents = 'none';
+overlay.style.display = 'none';
+overlay.style.animation = 'cttPulse 1s infinite';
+document.body.appendChild(overlay);
+
+const style = document.createElement('style');
+style.textContent = `@keyframes cttPulse {0%{opacity:.6;}50%{opacity:1;}100%{opacity:.6;}}`;
+document.head.appendChild(style);
+
+let overlaySeconds = 0;
+setInterval(() => {
+  if (document.hasFocus() && !isIdle && currentCategory) {
+    overlaySeconds++;
+    overlay.textContent = `${currentCategory.replace('_',' ')}: ${formatOverlayTime(overlaySeconds)}`;
+    overlay.style.display = 'block';
+  } else {
+    overlaySeconds = 0;
+    overlay.style.display = 'none';
+  }
+}, 1000);
 

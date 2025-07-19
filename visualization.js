@@ -26,15 +26,32 @@ function renderSection(el, title, summary, days) {
   let total = 0;
   for (const val of Object.values(summary)) total += val;
   const avg = total / days;
-  const ul = document.createElement('ul');
+
+  const chart = document.createElement('div');
+  chart.style.display = 'grid';
+  chart.style.gap = '6px';
+
   for (const [cat, val] of Object.entries(summary)) {
-    const li = document.createElement('li');
-    li.textContent = `${cat.replace('_',' ')}: ${formatTime(val)}`;
-    ul.appendChild(li);
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.gap = '6px';
+
+    const label = document.createElement('div');
+    label.style.flex = '0 0 auto';
+    label.textContent = `${cat.replace('_',' ')}: ${formatTime(val)}`;
+    const bar = document.createElement('div');
+    bar.className = 'chart-bar';
+    const percent = total ? (val / total) * 100 : 0;
+    bar.style.width = percent + '%';
+    row.appendChild(label);
+    row.appendChild(bar);
+    chart.appendChild(row);
   }
+
   const avgEl = document.createElement('div');
   avgEl.textContent = `Average per day: ${formatTime(Math.round(avg))}`;
-  el.appendChild(ul);
+  el.appendChild(chart);
   el.appendChild(avgEl);
 }
 
