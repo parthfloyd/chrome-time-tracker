@@ -12,7 +12,7 @@ function formatOverlayTime(seconds) {
 }
 
 const DEFAULT_KEYWORDS = {
-  reading: ['article', 'news'],
+  reading: ['feed', 'news'],
   feed: ['feed'],
   chatting: ['messaging', 'chat'],
   profile_browsing: ['profile', 'about'],
