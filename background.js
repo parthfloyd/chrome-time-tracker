@@ -38,11 +38,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'logActivity') {
     const { category, timeSpent } = request.payload;
 
-    chrome.storage.local.get(['activityLog'], result => {
+    chrome.storage.local.get(['activityLog', 'activityHistory'], result => {
       const log = result.activityLog || {};
+      const history = result.activityHistory || {};
       log[category] = (log[category] || 0) + timeSpent;
 
-      chrome.storage.local.set({ activityLog: log }, () => {
+      const today = new Date().toISOString().slice(0, 10);
+      history[today] = history[today] || {};
+      history[today][category] = (history[today][category] || 0) + timeSpent;
+
+      chrome.storage.local.set({ activityLog: log, activityHistory: history }, () => {
         checkThreshold(category, log[category]);
       });
     });
