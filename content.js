@@ -51,8 +51,11 @@ function setCategory(newCategory) {
   }
 }
 
+const storage = (chrome.storage && chrome.storage.sync) ?
+  chrome.storage.sync : chrome.storage.local;
+
 function updateCategory() {
-  chrome.storage.sync.get(['customKeywords','idleThreshold'], (data) => {
+  storage.get(['customKeywords','idleThreshold'], (data) => {
     const determined = determineCategory(window.location.href, data.customKeywords);
     if (determined) {
       setCategory(determined);
