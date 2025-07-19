@@ -10,7 +10,7 @@ A Chrome Extension to track time spent on:
 ## Features
 
 - Tracks time only on the **active tab**
-- Works exclusively on [LinkedIn](https://www.linkedin.com)
+- Works exclusively on [LinkedIn](https://www.linkedin.com) (only `www.linkedin.com` pages)
 - Categorizes activity based on page URL
 - Detects chat windows in the feed to record messaging time
 - Logs browsing time in real time while a tab is focused
