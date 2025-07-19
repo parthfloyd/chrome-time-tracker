@@ -15,6 +15,8 @@ A Chrome Extension to track time spent on:
 - Logs browsing time in real time while a tab is focused
 - Dynamic popup updates with an animated chart
 - Allows reset of all data
+- Custom categories and idle/notification thresholds
+- Optional desktop reminders with a Pomodoro timer
 
 ## Installation
 
@@ -49,3 +51,4 @@ Edit
 - `tabs`: to get the current active tab.
 - `storage`: to store time logs.
 - `activeTab`: for active tab focus handling.
+- `notifications`: to display alerts and timers.
