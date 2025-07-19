@@ -15,7 +15,7 @@ const DEFAULT_KEYWORDS = {
   reading: ['feed', 'news'],
   feed: ['feed'],
   chatting: ['messaging', 'chat'],
-  profile_browsing: ['profile', 'about'],
+  profile_browsing: ['in', 'about'],
   applying_jobs: ['apply', 'job'],
   editing_profile: ['edit', 'resume']
 };
