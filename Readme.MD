@@ -12,7 +12,8 @@ A Chrome Extension to track time spent on:
 - Tracks time only on the **active tab**
 - Categorizes activity based on page URL
 - Detects chat windows in the feed to record messaging time
-- Displays a summary in the popup
+- Logs browsing time in real time while a tab is focused
+- Dynamic popup updates with an animated chart
 - Allows reset of all data
 
 ## Installation

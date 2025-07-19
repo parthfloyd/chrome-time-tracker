@@ -1,5 +1,6 @@
 let lastTime = Date.now();
 let currentCategory = null;
+let intervalId = null;
 
 const DEFAULT_KEYWORDS = {
   reading: ['feed', 'article', 'news'],
@@ -52,7 +53,7 @@ function updateCategory() {
 function trackActivity() {
   const now = Date.now();
   const timeSpent = Math.floor((now - lastTime) / 1000);
-  if (currentCategory && timeSpent > 1) {
+  if (currentCategory && timeSpent > 0) {
     chrome.runtime.sendMessage({
       type: 'logActivity',
       payload: { category: currentCategory, timeSpent }
@@ -61,13 +62,32 @@ function trackActivity() {
   lastTime = now;
 }
 
+function startInterval() {
+  if (!intervalId) {
+    intervalId = setInterval(() => {
+      if (document.hasFocus()) {
+        trackActivity();
+      }
+    }, 5000);
+  }
+}
+
+function stopInterval() {
+  if (intervalId) {
+    clearInterval(intervalId);
+    intervalId = null;
+  }
+}
+
 window.addEventListener('focus', () => {
   updateCategory();
   lastTime = Date.now();
+  startInterval();
 });
 
 window.addEventListener('blur', () => {
   trackActivity();
+  stopInterval();
 });
 
 document.addEventListener('focusin', (e) => {
@@ -79,3 +99,4 @@ document.addEventListener('focusin', (e) => {
 });
 
 updateCategory();
+startInterval();
