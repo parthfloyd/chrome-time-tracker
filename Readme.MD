@@ -10,14 +10,15 @@ A Chrome Extension to track time spent on:
 ## Features
 
 - Tracks time only on the **active tab**
+- Works exclusively on [LinkedIn](https://www.linkedin.com)
 - Categorizes activity based on page URL
 - Detects chat windows in the feed to record messaging time
 - Logs browsing time in real time while a tab is focused
 - Dynamic popup updates with an animated chart
 - Allows reset of all data
 - Custom categories and idle/notification thresholds
-- Optional desktop reminders with a Pomodoro timer
 - Statistics page with daily, weekly and monthly summaries
+- Refreshed modern interface
 
 ## Installation
 
