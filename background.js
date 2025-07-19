@@ -1,5 +1,7 @@
 let activeTabId = null;
 const notified = {};
+const storage = (chrome.storage && chrome.storage.sync) ?
+  chrome.storage.sync : chrome.storage.local;
 
 const productiveCategories = ['chatting', 'applying_jobs', 'editing_profile', 'profile_browsing'];
 const unproductiveCategories = ['feed', 'reading'];
@@ -9,7 +11,7 @@ chrome.tabs.onActivated.addListener(activeInfo => {
 });
 
 async function checkThreshold(category, timeSpent) {
-  const { categoryThresholds } = await chrome.storage.sync.get('categoryThresholds');
+  const { categoryThresholds } = await storage.get('categoryThresholds');
   const thresholds = categoryThresholds || {};
   const limit = thresholds[category];
   if (!limit) return;

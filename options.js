@@ -1,3 +1,6 @@
+const storage = (chrome.storage && chrome.storage.sync) ?
+  chrome.storage.sync : chrome.storage.local;
+
 document.getElementById('keywordForm').addEventListener('submit', function(e) {
   e.preventDefault();
   const keywords = document.getElementById('keywords').value;
@@ -6,7 +9,7 @@ document.getElementById('keywordForm').addEventListener('submit', function(e) {
   try {
     const parsedKeywords = JSON.parse(keywords);
     const parsedThresh = categoryThresh ? JSON.parse(categoryThresh) : {};
-    chrome.storage.sync.set({
+    storage.set({
       customKeywords: parsedKeywords,
       idleThreshold: idle,
       categoryThresholds: parsedThresh
@@ -18,7 +21,7 @@ document.getElementById('keywordForm').addEventListener('submit', function(e) {
   }
 });
 
-chrome.storage.sync.get(['customKeywords','idleThreshold','categoryThresholds'], (data) => {
+storage.get(['customKeywords','idleThreshold','categoryThresholds'], (data) => {
   if (data.customKeywords) {
     document.getElementById('keywords').value = JSON.stringify(data.customKeywords, null, 2);
   }
