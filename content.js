@@ -20,9 +20,32 @@ function determineCategory(url, customKeywords) {
   return null;
 }
 
+function isMessagingElement(element) {
+  let el = element;
+  while (el && el !== document.body) {
+    const id = el.id ? el.id.toLowerCase() : '';
+    const cls = el.className ? el.className.toLowerCase() : '';
+    if (/chat|msg|messag/.test(id) || /chat|msg|messag/.test(cls)) {
+      return true;
+    }
+    el = el.parentElement;
+  }
+  return false;
+}
+
+function setCategory(newCategory) {
+  if (currentCategory !== newCategory) {
+    trackActivity();
+    currentCategory = newCategory;
+  }
+}
+
 function updateCategory() {
   chrome.storage.sync.get('customKeywords', (data) => {
-    currentCategory = determineCategory(window.location.href, data.customKeywords);
+    const determined = determineCategory(window.location.href, data.customKeywords);
+    if (determined) {
+      setCategory(determined);
+    }
   });
 }
 
@@ -45,6 +68,14 @@ window.addEventListener('focus', () => {
 
 window.addEventListener('blur', () => {
   trackActivity();
+});
+
+document.addEventListener('focusin', (e) => {
+  if (isMessagingElement(e.target)) {
+    setCategory('chatting');
+  } else if (currentCategory === 'chatting') {
+    updateCategory();
+  }
 });
 
 updateCategory();
