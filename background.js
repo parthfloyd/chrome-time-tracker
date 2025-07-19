@@ -8,27 +8,26 @@ chrome.tabs.onActivated.addListener(activeInfo => {
   activeTabId = activeInfo.tabId;
 });
 
-function checkThreshold(category, timeSpent) {
-  chrome.storage.sync.get('categoryThresholds', ({ categoryThresholds }) => {
-    const thresholds = categoryThresholds || {};
-    const limit = thresholds[category];
-    if (!limit) return;
-    if (timeSpent >= limit && !notified[category]) {
-      chrome.notifications.create({
-        type: 'basic',
-        iconUrl: 'icon.png',
-        title: 'Time Alert',
-        message: `You have spent more than ${Math.floor(limit/60)}m on ${category}.`
-      });
-      notified[category] = true;
-    }
-    if (timeSpent < limit) {
-      notified[category] = false;
-    }
-  });
+async function checkThreshold(category, timeSpent) {
+  const { categoryThresholds } = await chrome.storage.sync.get('categoryThresholds');
+  const thresholds = categoryThresholds || {};
+  const limit = thresholds[category];
+  if (!limit) return;
+  if (timeSpent >= limit && !notified[category]) {
+    await chrome.notifications.create({
+      type: 'basic',
+      iconUrl: 'icon.png',
+      title: 'Time Alert',
+      message: `You have spent more than ${Math.floor(limit/60)}m on ${category}.`
+    });
+    notified[category] = true;
+  }
+  if (timeSpent < limit) {
+    notified[category] = false;
+  }
 }
 
-function updateScore(category, timeSpent) {
+async function updateScore(category, timeSpent) {
   const minutes = timeSpent / 60;
   let delta = 0;
   if (productiveCategories.includes(category)) {
@@ -38,40 +37,36 @@ function updateScore(category, timeSpent) {
   } else {
     return;
   }
-  chrome.storage.local.get('scoreboard', ({ scoreboard }) => {
-    scoreboard = scoreboard || { points: 0, badges: [] };
-    scoreboard.points = (scoreboard.points || 0) + delta;
-    scoreboard.badges = scoreboard.badges || [];
-    if (scoreboard.points >= 50 && !scoreboard.badges.includes('Productive Pro')) {
-      scoreboard.badges.push('Productive Pro');
-    }
-    if (scoreboard.points <= -30 && !scoreboard.badges.includes('Feed Fiend')) {
-      scoreboard.badges.push('Feed Fiend');
-    }
-    chrome.storage.local.set({ scoreboard });
-  });
+  const { scoreboard } = await chrome.storage.local.get('scoreboard');
+  const sb = scoreboard || { points: 0, badges: [] };
+  sb.points = (sb.points || 0) + delta;
+  sb.badges = sb.badges || [];
+  if (sb.points >= 50 && !sb.badges.includes('Productive Pro')) {
+    sb.badges.push('Productive Pro');
+  }
+  if (sb.points <= -30 && !sb.badges.includes('Feed Fiend')) {
+    sb.badges.push('Feed Fiend');
+  }
+  await chrome.storage.local.set({ scoreboard: sb });
 }
 
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (request) => {
   if (request.type === 'logActivity') {
     const { category, timeSpent } = request.payload;
 
-    chrome.storage.local.get(['activityLog', 'activityHistory'], result => {
-      const log = result.activityLog || {};
-      const history = result.activityHistory || {};
-      log[category] = (log[category] || 0) + timeSpent;
+    const { activityLog = {}, activityHistory = {} } =
+      await chrome.storage.local.get(['activityLog', 'activityHistory']);
+    activityLog[category] = (activityLog[category] || 0) + timeSpent;
 
-      const today = new Date().toISOString().slice(0, 10);
-      history[today] = history[today] || {};
-      history[today][category] = (history[today][category] || 0) + timeSpent;
+    const today = new Date().toISOString().slice(0, 10);
+    activityHistory[today] = activityHistory[today] || {};
+    activityHistory[today][category] =
+      (activityHistory[today][category] || 0) + timeSpent;
 
-      chrome.storage.local.set({ activityLog: log, activityHistory: history }, () => {
-        checkThreshold(category, log[category]);
-      });
-    });
-    updateScore(category, timeSpent);
-    return;
+    await chrome.storage.local.set({ activityLog, activityHistory });
+
+    await checkThreshold(category, activityLog[category]);
+    await updateScore(category, timeSpent);
   }
-
 });
