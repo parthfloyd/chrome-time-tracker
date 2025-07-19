@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Extension Options</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background-color: #121212;
+      color: #fff;
+    }
+    label, input, textarea {
+      display: block;
+      margin-top: 10px;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Customize Keywords</h2>
+  <form id="keywordForm">
+    <label for="keywords">Enter custom keywords (JSON format):</label>
+    <textarea id="keywords" name="keywords">{}</textarea>
+    <button type="submit">Save</button>
+  </form>
+  <script src="options.js"></script>
+</body>
+</html>
