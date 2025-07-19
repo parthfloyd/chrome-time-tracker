@@ -6,6 +6,7 @@ let idleThreshold = 60;
 let isIdle = false;
 // Only enable the tracker on the main LinkedIn site
 const isLinkedIn = window.location.hostname === 'www.linkedin.com';
+let lastUrl = window.location.href;
 
 function formatOverlayTime(seconds) {
   const m = Math.floor(seconds / 60);
@@ -14,15 +15,21 @@ function formatOverlayTime(seconds) {
 }
 
 const DEFAULT_KEYWORDS = {
-  reading: ['feed', 'news'],
+  reading: ['/feed/', '/pulse/'],
   feed: ['feed'],
   chatting: ['messaging', 'chat'],
-  profile_browsing: ['in', 'about'],
+  profile_browsing: ['/in/', 'about'],
   applying_jobs: ['apply', 'job'],
   editing_profile: ['edit', 'resume']
 };
 
 function determineCategory(url, customKeywords) {
+  // Specific LinkedIn page checks
+  if (url.startsWith('https://www.linkedin.com/feed/')) return 'reading';
+  if (url.startsWith('https://www.linkedin.com/messaging/')) return 'chatting';
+  if (url.includes('/pulse/')) return 'reading';
+  if (url.includes('/in/')) return 'profile_browsing';
+
   const keywords = customKeywords || DEFAULT_KEYWORDS;
   for (const category in keywords) {
     if (keywords[category].some(keyword => url.includes(keyword))) {
@@ -58,9 +65,7 @@ const storage = (chrome.storage && chrome.storage.sync) ?
 function updateCategory() {
   storage.get(['customKeywords','idleThreshold'], (data) => {
     const determined = determineCategory(window.location.href, data.customKeywords);
-    if (determined) {
-      setCategory(determined);
-    }
+    setCategory(determined);
     if (data.idleThreshold) {
       idleThreshold = data.idleThreshold;
     }
@@ -135,6 +140,14 @@ if (isLinkedIn) {
       updateCategory();
     }
   });
+
+  // Monitor URL changes to update category in single-page navigation
+  setInterval(() => {
+    if (window.location.href !== lastUrl) {
+      lastUrl = window.location.href;
+      updateCategory();
+    }
+  }, 1000);
 
   updateCategory();
   startInterval();
