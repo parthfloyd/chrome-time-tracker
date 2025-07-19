@@ -17,6 +17,7 @@ A Chrome Extension to track time spent on:
 - Allows reset of all data
 - Custom categories and idle/notification thresholds
 - Optional desktop reminders with a Pomodoro timer
+- Statistics page with daily, weekly and monthly summaries
 
 ## Installation
 
@@ -34,6 +35,8 @@ chrome-time-tracker/
 ├── popup.html
 ├── popup.js
 ├── styles.css
+├── visualization.html
+├── visualization.js
 └── README.md
 
 markdown
@@ -44,7 +47,7 @@ Edit
 
 - `content.js` runs on each page and determines the activity category, including detecting chat windows within the feed.
 - `background.js` stores the activity time per category.
-- `popup.html` shows the tracked time and allows resetting.
+- `popup.html` shows the tracked time and allows resetting. You can open `visualization.html` from the popup to view daily, weekly and monthly summaries.
 
 ## Permissions
 

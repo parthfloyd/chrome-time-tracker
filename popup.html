@@ -12,7 +12,13 @@
     <ul id="logList"></ul>
     <button id="resetBtn">Reset</button>
     <button id="pomodoroBtn">Start Pomodoro</button>
+    <button id="statsBtn">View Stats</button>
   </div>
   <script src="popup.js"></script>
+  <script>
+    document.getElementById('statsBtn').addEventListener('click', () => {
+      chrome.tabs.create({ url: 'visualization.html' });
+    });
+  </script>
 </body>
 </html>
