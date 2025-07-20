@@ -5,6 +5,8 @@ document.getElementById('keywordForm').addEventListener('submit', function(e) {
   e.preventDefault();
   const keywords = document.getElementById('keywords').value;
   const idle = parseInt(document.getElementById('idleThreshold').value, 10) || 60;
+  const overlayDelay = parseInt(document.getElementById('overlayDelay').value, 10) || 0;
+  const overlayEnabled = document.getElementById('overlayEnabled').checked;
   const categoryThresh = document.getElementById('categoryThresholds').value;
   try {
     const parsedKeywords = JSON.parse(keywords);
@@ -12,7 +14,9 @@ document.getElementById('keywordForm').addEventListener('submit', function(e) {
     storage.set({
       customKeywords: parsedKeywords,
       idleThreshold: idle,
-      categoryThresholds: parsedThresh
+      categoryThresholds: parsedThresh,
+      overlayDelay,
+      overlayEnabled
     }, () => {
       alert('Options saved!');
     });
@@ -21,7 +25,7 @@ document.getElementById('keywordForm').addEventListener('submit', function(e) {
   }
 });
 
-storage.get(['customKeywords','idleThreshold','categoryThresholds'], (data) => {
+storage.get(['customKeywords','idleThreshold','categoryThresholds','overlayDelay','overlayEnabled'], (data) => {
   if (data.customKeywords) {
     document.getElementById('keywords').value = JSON.stringify(data.customKeywords, null, 2);
   }
@@ -30,5 +34,11 @@ storage.get(['customKeywords','idleThreshold','categoryThresholds'], (data) => {
   }
   if (data.categoryThresholds) {
     document.getElementById('categoryThresholds').value = JSON.stringify(data.categoryThresholds, null, 2);
+  }
+  if (typeof data.overlayDelay === 'number') {
+    document.getElementById('overlayDelay').value = data.overlayDelay;
+  }
+  if (typeof data.overlayEnabled === 'boolean') {
+    document.getElementById('overlayEnabled').checked = data.overlayEnabled;
   }
 });
