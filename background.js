@@ -53,22 +53,30 @@ async function updateScore(category, timeSpent) {
 }
 
 
-chrome.runtime.onMessage.addListener(async (request) => {
+async function handleLogActivity({ category, timeSpent }) {
+  const { activityLog = {}, activityHistory = {} } =
+    await chrome.storage.local.get(['activityLog', 'activityHistory']);
+  activityLog[category] = (activityLog[category] || 0) + timeSpent;
+
+  const today = new Date().toISOString().slice(0, 10);
+  activityHistory[today] = activityHistory[today] || {};
+  activityHistory[today][category] =
+    (activityHistory[today][category] || 0) + timeSpent;
+
+  await chrome.storage.local.set({ activityLog, activityHistory });
+
+  await checkThreshold(category, activityLog[category]);
+  await updateScore(category, timeSpent);
+}
+
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.type === 'logActivity') {
-    const { category, timeSpent } = request.payload;
-
-    const { activityLog = {}, activityHistory = {} } =
-      await chrome.storage.local.get(['activityLog', 'activityHistory']);
-    activityLog[category] = (activityLog[category] || 0) + timeSpent;
-
-    const today = new Date().toISOString().slice(0, 10);
-    activityHistory[today] = activityHistory[today] || {};
-    activityHistory[today][category] =
-      (activityHistory[today][category] || 0) + timeSpent;
-
-    await chrome.storage.local.set({ activityLog, activityHistory });
-
-    await checkThreshold(category, activityLog[category]);
-    await updateScore(category, timeSpent);
+    handleLogActivity(request.payload)
+      .then(() => sendResponse())
+      .catch((err) => {
+        console.error(err);
+        sendResponse({ error: err.toString() });
+      });
+    return true;
   }
 });
