@@ -17,6 +17,7 @@ A Chrome Extension to track time spent on:
 - Dynamic popup updates with an animated chart
 - Allows reset of all data
 - Custom categories and idle/notification thresholds
+- Movable on-page timer with optional delay and ability to disable
 - Statistics page with daily, weekly and monthly summaries
 - Refreshed modern interface
 - Gamification points and badges for productive time
@@ -40,10 +41,6 @@ chrome-time-tracker/
 ├── visualization.html
 ├── visualization.js
 └── README.md
-
-markdown
-Copy
-Edit
 
 ## How it Works
 

@@ -4,6 +4,8 @@ let currentCategory = null;
 let intervalId = null;
 let idleThreshold = 60;
 let isIdle = false;
+let overlayDelay = 0;
+let overlayEnabled = true;
 // Only enable the tracker on the main LinkedIn site
 const isLinkedIn = window.location.hostname === 'www.linkedin.com';
 let lastUrl = window.location.href;
@@ -56,6 +58,7 @@ function setCategory(newCategory) {
   if (currentCategory !== newCategory) {
     trackActivity();
     currentCategory = newCategory;
+    overlaySeconds = 0;
   }
 }
 
@@ -63,11 +66,17 @@ const storage = (chrome.storage && chrome.storage.sync) ?
   chrome.storage.sync : chrome.storage.local;
 
 function updateCategory() {
-  storage.get(['customKeywords','idleThreshold'], (data) => {
+  storage.get(['customKeywords','idleThreshold','overlayDelay','overlayEnabled'], (data) => {
     const determined = determineCategory(window.location.href, data.customKeywords);
     setCategory(determined);
     if (data.idleThreshold) {
       idleThreshold = data.idleThreshold;
+    }
+    if (typeof data.overlayDelay === 'number') {
+      overlayDelay = data.overlayDelay;
+    }
+    if (typeof data.overlayEnabled === 'boolean') {
+      overlayEnabled = data.overlayEnabled;
     }
   });
 }
@@ -163,7 +172,7 @@ overlay.style.color = '#fff';
 overlay.style.fontSize = '14px';
 overlay.style.borderRadius = '4px';
 overlay.style.zIndex = '9999';
-overlay.style.pointerEvents = 'none';
+overlay.style.pointerEvents = 'auto';
 overlay.style.display = 'none';
 overlay.style.animation = 'cttPulse 1s infinite';
 document.body.appendChild(overlay);
@@ -173,13 +182,41 @@ style.textContent = `@keyframes cttPulse {0%{opacity:.6;}50%{opacity:1;}100%{opa
 document.head.appendChild(style);
 
 let overlaySeconds = 0;
+let dragging = false;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
+
+overlay.addEventListener('mousedown', (e) => {
+  dragging = true;
+  dragOffsetX = e.clientX - overlay.getBoundingClientRect().left;
+  dragOffsetY = e.clientY - overlay.getBoundingClientRect().top;
+  overlay.style.bottom = 'auto';
+  overlay.style.right = 'auto';
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (dragging) {
+    overlay.style.left = `${e.clientX - dragOffsetX}px`;
+    overlay.style.top = `${e.clientY - dragOffsetY}px`;
+  }
+});
+
+document.addEventListener('mouseup', () => { dragging = false; });
+
 setInterval(() => {
+  if (!overlayEnabled) {
+    overlay.style.display = 'none';
+    return;
+  }
   if (document.visibilityState === 'visible' && document.hasFocus() && !isIdle && currentCategory) {
     overlaySeconds++;
-    overlay.textContent = `${currentCategory.replace('_',' ')}: ${formatOverlayTime(overlaySeconds)}`;
-    overlay.style.display = 'block';
+    if (overlaySeconds >= overlayDelay) {
+      overlay.textContent = `${currentCategory.replace('_',' ')}: ${formatOverlayTime(overlaySeconds)}`;
+      overlay.style.display = 'block';
+    } else {
+      overlay.style.display = 'none';
+    }
   } else {
-    overlaySeconds = 0;
     overlay.style.display = 'none';
   }
 }, 1000);
