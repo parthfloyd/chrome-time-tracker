@@ -19,7 +19,7 @@ A Chrome Extension to track time spent on:
 - Custom categories and idle/notification thresholds
 - Movable on-page timer with optional delay and ability to disable
 - Statistics page with daily, weekly and monthly summaries
-- Refreshed modern interface
+- Refreshed dark interface inspired by ChatGPT and Perplexity
 - Gamification points and badges for productive time
 
 ## Installation
