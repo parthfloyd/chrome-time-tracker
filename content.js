@@ -4,8 +4,10 @@ let currentCategory = null;
 let intervalId = null;
 let idleThreshold = 60;
 let isIdle = false;
-let overlayDelay = 0;
+let overlayDelay = 60;
 let overlayEnabled = true;
+let overlay;
+let overlaySeconds = 0;
 // Only enable the tracker on the main LinkedIn site
 const isLinkedIn = window.location.hostname === 'www.linkedin.com';
 let lastUrl = window.location.href;
@@ -59,6 +61,9 @@ function setCategory(newCategory) {
     trackActivity();
     currentCategory = newCategory;
     overlaySeconds = 0;
+    if (overlay) {
+      overlay.style.display = 'none';
+    }
   }
 }
 
@@ -161,8 +166,8 @@ if (isLinkedIn) {
   updateCategory();
   startInterval();
 
-  const overlay = document.createElement('div');
-overlay.id = 'timeTrackerOverlay';
+  overlay = document.createElement('div');
+  overlay.id = 'timeTrackerOverlay';
 overlay.style.position = 'fixed';
 overlay.style.bottom = '10px';
 overlay.style.right = '10px';
@@ -175,13 +180,13 @@ overlay.style.zIndex = '9999';
 overlay.style.pointerEvents = 'auto';
 overlay.style.display = 'none';
 overlay.style.animation = 'cttPulse 1s infinite';
-document.body.appendChild(overlay);
+  document.body.appendChild(overlay);
 
-const style = document.createElement('style');
-style.textContent = `@keyframes cttPulse {0%{opacity:.6;}50%{opacity:1;}100%{opacity:.6;}}`;
-document.head.appendChild(style);
+  const style = document.createElement('style');
+  style.textContent = `@keyframes cttPulse {0%{opacity:.6;}50%{opacity:1;}100%{opacity:.6;}}`;
+  document.head.appendChild(style);
 
-let overlaySeconds = 0;
+  overlaySeconds = 0;
 let dragging = false;
 let dragOffsetX = 0;
 let dragOffsetY = 0;
