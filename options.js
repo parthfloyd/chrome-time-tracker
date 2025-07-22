@@ -5,7 +5,7 @@ document.getElementById('keywordForm').addEventListener('submit', function(e) {
   e.preventDefault();
   const keywords = document.getElementById('keywords').value;
   const idle = parseInt(document.getElementById('idleThreshold').value, 10) || 60;
-  const overlayDelay = parseInt(document.getElementById('overlayDelay').value, 10) || 0;
+  const overlayDelay = parseInt(document.getElementById('overlayDelay').value, 10) || 60;
   const overlayEnabled = document.getElementById('overlayEnabled').checked;
   const categoryThresh = document.getElementById('categoryThresholds').value;
   try {
@@ -37,6 +37,8 @@ storage.get(['customKeywords','idleThreshold','categoryThresholds','overlayDelay
   }
   if (typeof data.overlayDelay === 'number') {
     document.getElementById('overlayDelay').value = data.overlayDelay;
+  } else {
+    document.getElementById('overlayDelay').value = 60;
   }
   if (typeof data.overlayEnabled === 'boolean') {
     document.getElementById('overlayEnabled').checked = data.overlayEnabled;
