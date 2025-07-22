@@ -23,8 +23,8 @@ const DEFAULT_KEYWORDS = {
   feed: ['feed'],
   chatting: ['messaging', 'chat'],
   profile_browsing: ['/in/', 'about'],
-  applying_jobs: ['apply', 'job'],
-  editing_profile: ['edit', 'resume']
+  applying_jobs: ['/apply/', '/jobs/'],
+  editing_profile: ['/edit/', 'resume']
 };
 
 function determineCategory(url, customKeywords) {
